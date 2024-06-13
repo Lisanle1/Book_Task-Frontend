@@ -2,69 +2,72 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { API_URL } from '../../Config/API_URL';
 import axios from 'axios';
-
+import { toast } from 'react-toastify';
+import './Signup.css'
 function SignUp() {
 
-
-    const [userName,setUserName]=useState('')
-    const [email,setEmail]=useState('')
-    const [password,setPassword]=useState('')
-    const [error,setError]=useState('')
+  const [formData, setFormData] = useState({
+    email: '',
+    userName:'',
+    password: ''
+    });
   const navigate= useNavigate()
+  const handleChange=(e)=>{
+    setFormData({...formData,[e.target.name]:e.target.value})
+    }
     const handleSubmit=async(e)=>{
       e.preventDefault()
-        if(Boolean(userName) && Boolean(email) && Boolean(password)){
+        if(Boolean(formData.userName) && Boolean(formData.email) && Boolean(formData.password)){
           const signupData={
-            username:userName,
-            email:email,
-            password:password
+            username:formData.userName,
+            email:formData.email,
+            password:formData.password
           }
-          console.log(signupData)
           try {
-            const res=await axios.post(`${API_URL}/api/v1/signup`,
+            const res=await axios.post(`${API_URL}/signup`,
               signupData
             )
-            console.log(res.data.tokenData)
             if(res.data.statusCode=='400'){
-              setError("user already exist")
+           toast.error(res.data.message)
             }
             else {
-              setError('')
               navigate('/')
             }
           } catch (error) {
             console.log(error)
           }
-          setUserName('')
-setEmail('')
-setPassword('')
         }
         else {
           alert('fill all the fields')
         }
     }
   return (
-    <div>
+    <div className='container'>
         <div>Sign up</div>
         <form onSubmit={handleSubmit}>
-            <div>
+        <div className='align'>
 
-            <label htmlFor="">UserName</label><input type="text" value={userName} onChange={(e)=>setUserName(e.target.value)}/>
+            <label htmlFor="" style={{    paddingRight: "100px"}}>UserName</label><input type="text" name='userName' value={formData.userName} onChange={handleChange}/>
             </div>
-            <div>
+            <br/>
 
-            <label htmlFor="">Email</label><input type="text" value={email} onChange={(e)=>setEmail(e.target.value)}/>
-            </div>
-            <div>
+            <div className='align'>
 
-            <label htmlFor="">Password</label><input type="text" value={password} onChange={(e)=>setPassword(e.target.value)}/>
+            <label htmlFor="" style={{    paddingRight: "130px"}}>Email</label><input type="text" name='email' value={formData.email} onChange={handleChange}/>
             </div>
+            <br/>
+
+            <div className='align'>
+
+            <label htmlFor="" style={{paddingRight: "110px"}}>Password</label><input type="text" name='password' value={formData.password} onChange={handleChange}/>
+            </div>
+            <br/>
+
             <div className="submitButton">
                 <button className="loginBtn" type='submit'>Sign UP</button>
             </div>
-            {error ? <div className="errorMessage">{error}</div> : null}
         </form>
-        <Link to={'/'} >Already have an account?, please Login.</Link>
+        <Link to={'/'} >Already have an account?</Link>
     </div>
   )
 }
