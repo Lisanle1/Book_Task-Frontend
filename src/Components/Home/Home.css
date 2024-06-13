@@ -1,0 +1,7 @@
+.table{
+    display: flex;
+    height: 100vh;
+    width: 90%;
+    padding: 45px;
+    justify-content: center;
+}
